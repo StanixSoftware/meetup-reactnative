@@ -1,15 +1,42 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { fetchMeetups } from './utils/api';
+
 export default class App extends React.Component {
+  static defaultProps = {
+    fetchMeetups
+  }
+  
+  state = { 
+    loading: false,
+    meetups: [] 
+  }
+
+  async componentDidMount()  {
+    this.setState({ loading: true });
+    const data = await this.props.fetchMeetups();
+
+    this.setState({
+      loading: false,
+      meetups: data.meetups
+    });
+  }
+
   render() {
+    const { meetups, loading } = this.state;
     return (
       <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-        <Text>Changes you make will automatically reload.</Text>
-        <Text>Shake your phone to open the developer menu.</Text>
+        { 
+          meetups.map((meetup, i) => (
+            <View key={i} style={{alignItems: 'center', justifyContent: 'center'}}>
+              <Text>{meetup.title}</Text>
+              <Text>{meetup.description}</Text>
+            </View>
+          ))
+        }
       </View>
-    );
+    )
   }
 }
 
